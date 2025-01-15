@@ -10,7 +10,7 @@ use crate::{FileMapping, Module, NativePointer};
 
 use {
     crate::{Gum, PageProtection, RangeDetails},
-    core::ffi::{c_char, c_void, CStr},
+    core::ffi::c_void,
     frida_gum_sys as gum_sys,
     frida_gum_sys::{gboolean, gpointer},
 };
@@ -18,12 +18,6 @@ use {
 #[cfg(not(feature = "std"))]
 use alloc::{string::String, string::ToString, vec::Vec};
 use cstr_core::CString;
-
-extern "C" {
-    pub fn _frida_g_get_home_dir() -> *const c_char;
-    pub fn _frida_g_get_current_dir() -> *const c_char;
-    pub fn _frida_g_get_tmp_dir() -> *const c_char;
-}
 
 #[derive(Clone, FromPrimitive, Debug)]
 #[repr(u32)]
@@ -116,32 +110,6 @@ impl<'a> Process<'a> {
             } else {
                 None
             }
-        }
-    }
-    /// Returns a string specifying the filesystem path to the current working directory
-    pub fn current_dir(&self) -> String {
-        unsafe {
-            CStr::from_ptr(_frida_g_get_current_dir())
-                .to_string_lossy()
-                .to_string()
-        }
-    }
-
-    /// Returns a string specifying the filesystem path to the directory to use for temporary files
-    pub fn tmp_dir(&self) -> String {
-        unsafe {
-            CStr::from_ptr(_frida_g_get_tmp_dir())
-                .to_string_lossy()
-                .to_string()
-        }
-    }
-
-    /// Returns a string specifying the filesystem path to the current user’s home directory
-    pub fn home_dir(&self) -> String {
-        unsafe {
-            CStr::from_ptr(_frida_g_get_home_dir())
-                .to_string_lossy()
-                .to_string()
         }
     }
 
